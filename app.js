@@ -68,11 +68,21 @@ function file(project, thumbOnly = false) {
   img.alt = '';
   button.append(img);
   if (!thumbOnly) button.append(element('span','',project.name));
+  button.title = project.name+' — Space to preview';
+  button.setAttribute('aria-keyshortcuts','Space');
+  button.ondblclick = () => { if (!byId('zoom').open) openPreview(); };
   button.onclick = () => {
     active = project;
+    if (view === 'Icon') {
+      panel.querySelector('.file[aria-pressed="true"]')?.setAttribute('aria-pressed','false');
+      button.setAttribute('aria-pressed','true');
+      button.focus({preventScroll:true});
+      if (matchMedia('(pointer: coarse)').matches) openPreview();
+      return;
+    }
     render();
     panel.querySelector('[data-file="'+active.file+'"]')?.focus({preventScroll:true});
-    if (view === 'Icon') openPreview();
+
   };
   return button;
 }
@@ -245,6 +255,31 @@ function divider(key, label, container) {
 }
 document.querySelector('nav').append(divider('sidebar','Sidebar',finder));
 
+byId('home').onclick = () => {
+  inside = false;
+  active = null;
+  selectedFolder = clientFolders[0];
+  render();
+  panel.scrollTop = 0;
+};
+document.addEventListener('keydown',event => {
+  if (event.key !== ' ' || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+  const dialog = byId('zoom');
+  if (dialog.open) {
+    event.preventDefault();
+    if (!event.repeat) dialog.close();
+    return;
+  }
+  if (!inside || !active?.file || !panel.contains(event.target)) return;
+  const fileButton = event.target.closest('button[data-file]');
+  if (!fileButton && event.target !== panel && !event.target.closest('.art')) return;
+  event.preventDefault();
+  if (event.repeat) return;
+  if (fileButton && fileButton.dataset.file !== active.file) {
+    fileButton.click();
+  }
+  if (!dialog.open) openPreview();
+});
 byId('close').onclick = () => byId('zoom').close();
 render();
 

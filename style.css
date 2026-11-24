@@ -67,3 +67,8 @@ nav{position:relative}.divider-sidebar{position:absolute;width:7px;top:0;bottom:
 .split.columns{grid-template-columns:min(var(--width-folders,36%),48%) 6px minmax(0,1fr)}
 footer{padding:0 6px;gap:4px}#path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.contact-line{gap:3px 6px;font-size:.73rem}
 }
+
+#home{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:5px}
+#home:hover{background:var(--selection)}
+#title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){header{gap:5px}#home{width:25px}}
