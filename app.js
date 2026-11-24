@@ -5,13 +5,15 @@ const glyphs = {
   Column: '<rect x="1" y="3" width="18" height="14" rx="2"/><path d="M7 3v14M13 3v14"/>',
   Gallery: '<rect x="1" y="2" width="18" height="11" rx="2"/><path d="M2 17h3m3 0h4m3 0h3"/>',
   work: '<path d="M2 5h6l2 2h8v10H2z"/>',
-  about: '<path d="M5 2h7l4 4v12H5zM12 2v5h4M8 11h5M8 14h4"/>'
+  previews: '<path d="M5 2h7l4 4v12H5zM12 2v5h4M8 11h5M8 14h4"/>'
 };
 const icon = key => '<svg aria-hidden="true" viewBox="0 0 20 20">'+glyphs[key]+'</svg>';
 const views = ['Icon','List','Column','Gallery'];
 let view = 'List';
 try { const saved = localStorage.getItem('portfolio-view'); if (views.includes(saved)) view = saved; } catch {}
-let active = projects[0];
+let active = null;
+let selectedFolder = clientFolders[0];
+let inside = false;
 let page = 'work';
 const panel = byId('workspace');
 function element(tag, css, label) {
@@ -58,32 +60,87 @@ function file(project, thumbOnly = false) {
   };
   return button;
 }
+function folderGraphic() {
+  const mark = element('span','folder-glyph');
+  mark.setAttribute('aria-hidden','true');
+  return mark;
+}
+function openFolder(name) {
+  selectedFolder = name;
+  active = (clientArtwork[name] || [])[0];
+  inside = true;
+  render();
+  byId('workspace').setAttribute('tabindex','-1');
+  byId('workspace').focus({preventScroll:true});
+}
+function renderFolders() {
+  const board = element('div','client-board mode-'+view.toLowerCase());
+  const choices = element('div','client-choices');
+  if (view === 'List') choices.append(element('div','label','Name'));
+  function showFolder(name) {
+    selectedFolder = name;
+    for (const entry of choices.querySelectorAll('button')) {
+      entry.setAttribute('aria-pressed', String(entry.textContent === name));
+    }
+    detail.replaceChildren(folderGraphic(),element('h2','',name));
+    const open = element('button','back','Open folder');
+    open.onclick = () => openFolder(name);
+    detail.append(open);
+  }
+  const detail = element('div','client-detail');
+  for (const name of clientFolders) {
+    const button = element('button','client-entry');
+    button.append(folderGraphic(),element('span','',name));
+    button.onclick = () => {
+      if (view === 'Gallery' || view === 'Column') showFolder(name);
+      else openFolder(name);
+    };
+    choices.append(button);
+  }
+  board.append(choices);
+  if (view === 'Gallery' || view === 'Column') {
+    board.append(detail);
+    showFolder(selectedFolder);
+  }
+  panel.append(board);
+}
 function render() {
   panel.replaceChildren();
-  const isWork = page === 'work';
-  const title = isWork ? 'Selected Work' : 'About';
-  byId('title').textContent = byId('path').textContent = title;
-  byId('views').hidden = !isWork;
-  byId('count').textContent = isWork ? projects.length+' items' : '';
+  const clients = page === 'work';
+  const items = clients ? (clientArtwork[selectedFolder] || []) : projects;
+  const title = clients ? (inside ? selectedFolder : 'Selected Work') : 'Project Previews';
+  byId('title').textContent = title;
+  byId('path').textContent = clients && inside ? 'Selected Work › '+selectedFolder : title;
+  const total = clients && !inside ? clientFolders.length : items.length;
+  byId('count').textContent = total+' '+(clients && !inside ? 'folders' : total === 1 ? 'item' : 'items');
   document.querySelectorAll('[data-page]').forEach(button => {
     if (button.dataset.page === page) button.setAttribute('aria-current','page');
     else button.removeAttribute('aria-current');
   });
-  if (!isWork) {
-    panel.append(element('p','about','A selection of work across brand identity, campaigns, and environmental design.'));
+  for (const button of byId('views').children) button.setAttribute('aria-pressed',String(button.dataset.view === view));
+  if (clients && !inside) {
+    renderFolders();
     return;
   }
-  for (const button of byId('views').children) button.setAttribute('aria-pressed',String(button.dataset.view === view));
+  if (clients && !items.length) {
+    const empty = element('div','empty');
+    empty.append(folderGraphic(), element('p','','This folder is empty.'));
+    const back = element('button','back','Back to Selected Work');
+    back.onclick = () => { inside = false; render(); };
+    empty.append(back);
+    panel.append(empty);
+    return;
+  }
   if (view === 'Icon') {
     const grid = element('div','icons');
-    projects.forEach(project => grid.append(file(project)));
+    items.forEach(project => grid.append(file(project)));
     panel.append(grid);
     return;
   }
   if (view === 'Gallery') {
     const gallery = element('div','gallery');
     const strip = element('div','strip');
-    projects.forEach(project => strip.append(file(project,true)));
+    items.forEach(project => strip.append(file(project,true)));
     gallery.append(preview(),strip);
     panel.append(gallery);
     return;
@@ -92,11 +149,11 @@ function render() {
   const split = element('div',columns ? 'split columns' : 'split');
   if (columns) {
     const folders = element('div','folders');
-    for (const folder of new Set(projects.map(project => project.folder))) {
+    for (const folder of new Set(items.map(project => project.folder))) {
       const button = element('button','folder',folder);
       button.setAttribute('aria-pressed',String(folder === active.folder));
       button.onclick = () => {
-        active = projects.find(project => project.folder === folder);
+        active = items.find(project => project.folder === folder);
         render();
         panel.querySelector('.folder[aria-pressed=true]').focus();
       };
@@ -106,7 +163,7 @@ function render() {
   }
   const list = element('div','files');
   list.append(element('div','label','Name'));
-  projects.filter(project => !columns || project.folder === active.folder).forEach(project => list.append(file(project)));
+  items.filter(project => !columns || project.folder === active.folder).forEach(project => list.append(file(project)));
   split.append(list,preview());
   panel.append(split);
 }
@@ -125,7 +182,7 @@ for (const name of views) {
 }
 document.querySelectorAll('[data-page]').forEach(button => {
   button.insertAdjacentHTML('afterbegin',icon(button.dataset.page));
-  button.onclick = () => { page = button.dataset.page; render(); };
+  button.onclick = () => { page = button.dataset.page; inside = false; active = projects[0]; render(); };
 });
 if (contactEmail) {
   byId('contact').href = 'mailto:'+contactEmail;
@@ -133,3 +190,48 @@ if (contactEmail) {
 }
 byId('close').onclick = () => byId('zoom').close();
 render();
+
+const finder = document.querySelector('.window');
+const grip = byId('resize');
+function resizeWindow(width,height) {
+  const bounds = finder.getBoundingClientRect();
+  const roomX = document.documentElement.clientWidth - bounds.left - 8;
+  const roomY = window.innerHeight - bounds.top - 8;
+  finder.style.width = Math.min(roomX,Math.max(360,width))+'px';
+  finder.style.height = Math.min(roomY,Math.max(320,height))+'px';
+}
+let drag;
+grip.onpointerdown = event => {
+  const rect = finder.getBoundingClientRect();
+  drag = {x:event.clientX,y:event.clientY,width:rect.width,height:rect.height};
+  grip.setPointerCapture(event.pointerId);
+};
+grip.onpointermove = event => {
+  if (drag) resizeWindow(drag.width+event.clientX-drag.x,drag.height+event.clientY-drag.y);
+};
+grip.onlostpointercapture = () => { drag = null; };
+grip.onkeydown = event => {
+  const offsets = {ArrowLeft:[-24,0],ArrowRight:[24,0],ArrowUp:[0,-24],ArrowDown:[0,24]};
+  const delta = offsets[event.key];
+  if (!delta) return;
+  event.preventDefault();
+  resizeWindow(finder.offsetWidth+delta[0],finder.offsetHeight+delta[1]);
+};
+const motion = matchMedia('(prefers-reduced-motion: reduce)');
+const ghosts = Array.from({length:3},() => {
+  const ghost = element('span','trail');
+  ghost.setAttribute('aria-hidden','true');
+  document.body.append(ghost);
+  return ghost;
+});
+let trailIndex = 0;
+let lastSample = -Infinity;
+document.addEventListener('pointermove',event => {
+  if (event.pointerType !== 'mouse' || motion.matches || drag || event.timeStamp-lastSample < 17) return;
+  lastSample = event.timeStamp;
+  const ghost = ghosts[trailIndex++ % ghosts.length];
+  ghost.getAnimations().forEach(animation => animation.cancel());
+  ghost.style.left = event.clientX+'px';
+  ghost.style.top = (event.clientY-6)+'px';
+  ghost.animate([{opacity:.36},{opacity:0}],{duration:90,easing:'ease-out'});
+});

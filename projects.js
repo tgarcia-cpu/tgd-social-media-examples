@@ -6,3 +6,7 @@ const projects = [
   { name: 'New Yor Partners', file: 'new-yor', folder: 'Wayfinding', alt: 'New Yor Partners directional sign' },
   { name: 'Delta Clinical Research', file: 'delta', folder: 'Identity', alt: 'Delta Clinical Research identity concept' }
 ];
+
+const clientFolders = ['BCP', 'Celly Health', 'Kyzatrex', 'Levo Health', 'ND', 'Peaches', 'Riverside Recovery', 'Roxus', 'The Eye Associates', 'WellSync', 'Wellya'];
+// Add client artwork here using the same name, file, and alt fields as projects.
+const clientArtwork = {};
