@@ -48,3 +48,22 @@ nav svg{stroke:#ff2a00}nav [data-page=work] svg{fill:#ff2a00;stroke:#ff2a00}.pix
 body{--inset:clamp(10px,2vw,32px);padding:var(--inset);grid-template-columns:minmax(0,1fr)}
 .window{width:100%;height:calc(100dvh - 2 * var(--inset));min-height:0;max-height:none}
 .shortcut,.shortcut-preview{text-decoration:none}.shortcut:hover,.shortcut-preview:hover{text-decoration:underline}.shortcut-preview{display:grid;justify-items:center;gap:8px;font-size:.875rem}.shortcut-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:6px;background:#f0f1f4;color:#0e223e;font-size:19px}
+
+body{height:100dvh;min-height:0;grid-template-rows:minmax(0,1fr) auto;gap:12px}
+.window{height:100%;--sidebar:min(var(--width-sidebar,160px),34%);--icon-size:28px}
+.contact-line{width:100%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;font-style:normal;font-size:.8rem;text-align:center}
+.contact-line b{color:#ff2a00}.contact-line a{color:inherit;text-decoration:none}.contact-line a:hover{text-decoration:underline}
+.size-control{display:flex;gap:5px;align-items:center;white-space:nowrap}.size-control input{width:clamp(45px,7vw,100px);accent-color:#ff2a00}
+.folder-glyph,.mode-icon .folder-glyph{width:var(--icon-size)}.mode-icon .client-choices{grid-template-columns:repeat(auto-fill,minmax(calc(var(--icon-size) + 60px),1fr))}
+.folder{display:flex;gap:7px;align-items:center}.divider{touch-action:none;user-select:none;cursor:col-resize;background:transparent;position:relative;z-index:1}.divider:before{content:"";position:absolute;inset:0 2px;background:var(--line)}.divider:hover:before,.divider:focus-visible:before{background:var(--orange)}
+nav{position:relative}.divider-sidebar{position:absolute;width:7px;top:0;bottom:0;right:-4px}.files,.folders,.preview{min-width:0}.files,.folders{border-right:0}.split .preview{border-left:0}
+@media(min-width:751px){
+.window{grid-template-columns:var(--sidebar) minmax(0,1fr)}.lights{width:var(--sidebar)}
+.split{grid-template-columns:min(var(--width-list,42%),75%) 6px minmax(0,1fr)}
+.split.columns{grid-template-columns:min(var(--width-folders,22%),48%) 6px min(var(--width-files,33%),48%) 6px minmax(0,1fr)}
+}
+@media(max-width:750px){
+.divider-sidebar,.divider-files,.divider-list{display:none}
+.split.columns{grid-template-columns:min(var(--width-folders,36%),48%) 6px minmax(0,1fr)}
+footer{padding:0 6px;gap:4px}#path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.contact-line{gap:3px 6px;font-size:.73rem}
+}

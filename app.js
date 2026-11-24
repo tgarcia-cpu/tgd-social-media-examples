@@ -14,7 +14,7 @@ try { const saved = localStorage.getItem('portfolio-view'); if (views.includes(s
 let active = null;
 let selectedFolder = clientFolders[0];
 let inside = false;
-let page = 'work';
+const page = 'work';
 const panel = byId('workspace');
 function element(tag, css, label) {
   const node = document.createElement(tag);
@@ -150,6 +150,7 @@ function render() {
     const names = clients ? clientFolders : new Set(items.map(project => project.folder));
     for (const folder of names) {
       const button = element('button','folder',folder);
+      button.prepend(folderGraphic());
       button.setAttribute('aria-pressed',String(folder === (clients ? selectedFolder : active.folder)));
       button.onclick = () => {
         if (clients) {
@@ -162,12 +163,12 @@ function render() {
       };
       folders.append(button);
     }
-    split.append(folders);
+    split.append(folders, divider('folders', 'Folder column', split));
   }
   const list = element('div','files');
   list.append(element('div','label','Name'));
   items.filter(project => clients || !columns || project.folder === active.folder).forEach(project => list.append(file(project)));
-  split.append(list,preview());
+  split.append(list, divider(columns ? 'files' : 'list', 'File column', split), preview());
   panel.append(split);
 }
 for (const name of views) {
@@ -185,12 +186,65 @@ for (const name of views) {
 }
 document.querySelectorAll('[data-page]').forEach(button => {
   button.insertAdjacentHTML('afterbegin',icon(button.dataset.page));
-  button.onclick = () => { page = button.dataset.page; inside = false; active = projects[0]; render(); };
+  button.onclick = () => { inside = false; active = projects[0]; render(); };
 });
 if (contactEmail) {
   byId('contact').href = 'mailto:'+contactEmail;
   byId('contact').hidden = false;
 }
+
+const finder = document.querySelector('.window');
+const sizeControl = byId('icon-size');
+try {
+  const saved = localStorage.getItem('finder-icon-size');
+  if (saved !== null) sizeControl.value = saved;
+} catch {}
+function setIconSize() {
+  finder.style.setProperty('--icon-size', sizeControl.value+'px');
+}
+sizeControl.oninput = () => {
+  setIconSize();
+  try { localStorage.setItem('finder-icon-size',sizeControl.value); } catch {}
+};
+setIconSize();
+
+function divider(key, label, container) {
+  const handle = element('div','divider divider-'+key);
+  handle.tabIndex = 0;
+  handle.setAttribute('role','separator');
+  handle.setAttribute('aria-label',label+' width');
+  handle.setAttribute('aria-orientation','vertical');
+  const property = '--width-'+key;
+  try {
+    const width = Number(localStorage.getItem('finder-'+key));
+    if (width > 0) finder.style.setProperty(property,width+'px');
+  } catch {}
+  const pane = () => key === 'sidebar' ? document.querySelector('nav') : handle.previousElementSibling;
+  function change(width) {
+    const room = container.clientWidth;
+    const limit = key === 'sidebar' ? room * .34 : key === 'list' ? room * .75 : room * .48;
+    const value = Math.round(Math.min(limit,Math.max(80,width)));
+    finder.style.setProperty(property,value+'px');
+    handle.setAttribute('aria-valuenow',value);
+    try { localStorage.setItem('finder-'+key,value); } catch {}
+  }
+  handle.onpointerdown = event => {
+    if (event.button !== 0) return;
+    const start = event.clientX;
+    const width = pane().getBoundingClientRect().width;
+    handle.setPointerCapture(event.pointerId);
+    handle.onpointermove = move => change(width+move.clientX-start);
+  };
+  handle.onlostpointercapture = () => { handle.onpointermove = null; };
+  handle.onkeydown = event => {
+    if (!['ArrowLeft','ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    change(pane().getBoundingClientRect().width+(event.key === 'ArrowRight' ? 12 : -12));
+  };
+  return handle;
+}
+document.querySelector('nav').append(divider('sidebar','Sidebar',finder));
+
 byId('close').onclick = () => byId('zoom').close();
 render();
 
