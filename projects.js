@@ -7,7 +7,7 @@ const projects = [
   { name: 'Delta Clinical Research', file: 'delta', folder: 'Identity', alt: 'Delta Clinical Research identity concept' }
 ];
 
-const clientFolders = ['BCP', 'Celly Health', 'Kyzatrex', 'Levo Health', 'ND', 'Peaches', 'Riverside Recovery', 'Roxus', 'The Eye Associates', 'WellSync', 'Wellya'];
+const clientFolders = ['BCP', 'Celly Health', 'Kyzatrex', 'Levo Health', 'Marpa Minds', 'ND', 'Peaches', 'Riverside Recovery', 'Roxus', 'The Eye Associates', 'WellSync', 'Wellya'];
 // Add client artwork here using the same name, file, and alt fields as projects.
 const clientArtwork = {
   "BCP": [
@@ -1114,6 +1114,171 @@ const clientArtwork = {
       "file": "work/wellya/01xl57aizcxipmsjrfkrg3vhrhh535wwa2",
       "folder": "Wellya",
       "alt": "Wellya — 1010x1350"
+    }
+  ],
+  "Marpa Minds": [
+    {
+      "name": "Eligible",
+      "file": "work/marpa-minds/eligible",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Eligible"
+    },
+    {
+      "name": "How It Works Carousel",
+      "file": "work/marpa-minds/how-it-works-carousel",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — How It Works Carousel"
+    },
+    {
+      "name": "Nasal Spray Vs. Ketamine",
+      "file": "work/marpa-minds/nasal-spray-vs-ketamine",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Nasal Spray Vs. Ketamine"
+    },
+    {
+      "name": "PATIENT FAQ 1 Template",
+      "file": "work/marpa-minds/patient-faq-1-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — PATIENT FAQ 1 Template"
+    },
+    {
+      "name": "PATIENT FAQ 2 Template",
+      "file": "work/marpa-minds/patient-faq-2-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — PATIENT FAQ 2 Template"
+    },
+    {
+      "name": "Providers Carousel",
+      "file": "work/marpa-minds/providers-carousel",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Providers Carousel"
+    },
+    {
+      "name": "PROVIDERS FAQ 1 Template",
+      "file": "work/marpa-minds/providers-faq-1-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — PROVIDERS FAQ 1 Template"
+    },
+    {
+      "name": "PROVIDERS FAQ 2 Template",
+      "file": "work/marpa-minds/providers-faq-2-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — PROVIDERS FAQ 2 Template"
+    },
+    {
+      "name": "Spravato Vs. Antidepressants",
+      "file": "work/marpa-minds/spravato-vs-antidepressants",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Spravato Vs. Antidepressants"
+    },
+    {
+      "name": "Spravato",
+      "file": "work/marpa-minds/spravato",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Spravato"
+    },
+    {
+      "name": "Spravato-1",
+      "file": "work/marpa-minds/spravato-1",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Spravato-1"
+    },
+    {
+      "name": "Spravato-2",
+      "file": "work/marpa-minds/spravato-2",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Spravato-2"
+    },
+    {
+      "name": "Spravato-3",
+      "file": "work/marpa-minds/spravato-3",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Spravato-3"
+    },
+    {
+      "name": "Spravato-4",
+      "file": "work/marpa-minds/spravato-4",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Spravato-4"
+    },
+    {
+      "name": "Stat 1 Template",
+      "file": "work/marpa-minds/stat-1-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Stat 1 Template"
+    },
+    {
+      "name": "Stat 2 Template",
+      "file": "work/marpa-minds/stat-2-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Stat 2 Template"
+    },
+    {
+      "name": "Stat 3 Template",
+      "file": "work/marpa-minds/stat-3-template",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Stat 3 Template"
+    },
+    {
+      "name": "Team",
+      "file": "work/marpa-minds/team",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Team"
+    },
+    {
+      "name": "Team-1",
+      "file": "work/marpa-minds/team-1",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Team-1"
+    },
+    {
+      "name": "Testimonials",
+      "file": "work/marpa-minds/testimonials",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Testimonials"
+    },
+    {
+      "name": "Testimonials-1",
+      "file": "work/marpa-minds/testimonials-1",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Testimonials-1"
+    },
+    {
+      "name": "The Experience Carousel",
+      "file": "work/marpa-minds/the-experience-carousel",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — The Experience Carousel"
+    },
+    {
+      "name": "The Marpa Experience",
+      "file": "work/marpa-minds/the-marpa-experience",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — The Marpa Experience"
+    },
+    {
+      "name": "treatment time",
+      "file": "work/marpa-minds/treatment-time",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — treatment time"
+    },
+    {
+      "name": "Why Marpa",
+      "file": "work/marpa-minds/why-marpa",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Why Marpa"
+    },
+    {
+      "name": "Why Marpa-1",
+      "file": "work/marpa-minds/why-marpa-1",
+      "folder": "Marpa Minds",
+      "alt": "Marpa Minds — Why Marpa-1"
+    }
+  ],
+  "Kyzatrex": [
+    {
+      "name": "Instagram",
+      "url": "https://www.instagram.com/kyzatrex_tu/",
+      "folder": "Kyzatrex"
     }
   ]
 };

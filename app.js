@@ -34,8 +34,23 @@ function openPreview() {
   byId('caption').textContent = active.name;
   byId('zoom').showModal();
 }
+function shortcut(project, className) {
+  const link = element('a',className);
+  link.href = project.url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.setAttribute('aria-label',project.name+' (opens in a new tab)');
+  const mark = element('span','shortcut-icon','↗');
+  mark.setAttribute('aria-hidden','true');
+  link.append(mark,element('span','',project.name));
+  return link;
+}
 function preview() {
   const pane = element('section','preview');
+  if (active.url) {
+    pane.append(shortcut(active,'shortcut-preview'));
+    return pane;
+  }
   const art = element('button','art');
   art.setAttribute('aria-label','Enlarge '+active.name);
   art.append(imageFor(active));
@@ -44,6 +59,7 @@ function preview() {
   return pane;
 }
 function file(project, thumbOnly = false) {
+  if (project.url) return shortcut(project,'file shortcut');
   const button = element('button','file');
   button.dataset.file = project.file;
   button.setAttribute('aria-label',project.name);
@@ -77,31 +93,13 @@ function renderFolders() {
   const board = element('div','client-board mode-'+view.toLowerCase());
   const choices = element('div','client-choices');
   if (view === 'List') choices.append(element('div','label','Name'));
-  function showFolder(name) {
-    selectedFolder = name;
-    for (const entry of choices.querySelectorAll('button')) {
-      entry.setAttribute('aria-pressed', String(entry.textContent === name));
-    }
-    detail.replaceChildren(folderGraphic(),element('h2','',name));
-    const open = element('button','back','Open folder');
-    open.onclick = () => openFolder(name);
-    detail.append(open);
-  }
-  const detail = element('div','client-detail');
   for (const name of clientFolders) {
     const button = element('button','client-entry');
     button.append(folderGraphic(),element('span','',name));
-    button.onclick = () => {
-      if (view === 'Gallery' || view === 'Column') showFolder(name);
-      else openFolder(name);
-    };
+    button.onclick = () => openFolder(name);
     choices.append(button);
   }
   board.append(choices);
-  if (view === 'Gallery' || view === 'Column') {
-    board.append(detail);
-    showFolder(selectedFolder);
-  }
   panel.append(board);
 }
 function render() {
@@ -149,10 +147,15 @@ function render() {
   const split = element('div',columns ? 'split columns' : 'split');
   if (columns) {
     const folders = element('div','folders');
-    for (const folder of new Set(items.map(project => project.folder))) {
+    const names = clients ? clientFolders : new Set(items.map(project => project.folder));
+    for (const folder of names) {
       const button = element('button','folder',folder);
-      button.setAttribute('aria-pressed',String(folder === active.folder));
+      button.setAttribute('aria-pressed',String(folder === (clients ? selectedFolder : active.folder)));
       button.onclick = () => {
+        if (clients) {
+          openFolder(folder);
+          return;
+        }
         active = items.find(project => project.folder === folder);
         render();
         panel.querySelector('.folder[aria-pressed=true]').focus();
@@ -163,7 +166,7 @@ function render() {
   }
   const list = element('div','files');
   list.append(element('div','label','Name'));
-  items.filter(project => !columns || project.folder === active.folder).forEach(project => list.append(file(project)));
+  items.filter(project => clients || !columns || project.folder === active.folder).forEach(project => list.append(file(project)));
   split.append(list,preview());
   panel.append(split);
 }
@@ -191,32 +194,6 @@ if (contactEmail) {
 byId('close').onclick = () => byId('zoom').close();
 render();
 
-const finder = document.querySelector('.window');
-const grip = byId('resize');
-function resizeWindow(width,height) {
-  const bounds = finder.getBoundingClientRect();
-  const roomX = document.documentElement.clientWidth - bounds.left - 8;
-  const roomY = window.innerHeight - bounds.top - 8;
-  finder.style.width = Math.min(roomX,Math.max(360,width))+'px';
-  finder.style.height = Math.min(roomY,Math.max(320,height))+'px';
-}
-let drag;
-grip.onpointerdown = event => {
-  const rect = finder.getBoundingClientRect();
-  drag = {x:event.clientX,y:event.clientY,width:rect.width,height:rect.height};
-  grip.setPointerCapture(event.pointerId);
-};
-grip.onpointermove = event => {
-  if (drag) resizeWindow(drag.width+event.clientX-drag.x,drag.height+event.clientY-drag.y);
-};
-grip.onlostpointercapture = () => { drag = null; };
-grip.onkeydown = event => {
-  const offsets = {ArrowLeft:[-24,0],ArrowRight:[24,0],ArrowUp:[0,-24],ArrowDown:[0,24]};
-  const delta = offsets[event.key];
-  if (!delta) return;
-  event.preventDefault();
-  resizeWindow(finder.offsetWidth+delta[0],finder.offsetHeight+delta[1]);
-};
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 const ghosts = Array.from({length:3},() => {
   const ghost = element('span','trail');
@@ -227,7 +204,7 @@ const ghosts = Array.from({length:3},() => {
 let trailIndex = 0;
 let lastSample = -Infinity;
 document.addEventListener('pointermove',event => {
-  if (event.pointerType !== 'mouse' || motion.matches || drag || event.timeStamp-lastSample < 17) return;
+  if (event.pointerType !== 'mouse' || motion.matches || event.timeStamp-lastSample < 17) return;
   lastSample = event.timeStamp;
   const ghost = ghosts[trailIndex++ % ghosts.length];
   ghost.getAnimations().forEach(animation => animation.cancel());
