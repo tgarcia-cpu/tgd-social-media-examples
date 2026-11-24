@@ -32,6 +32,7 @@ function displayPreview() {
   byId('large').src = imageFor(active).src;
   byId('large').alt = active.alt;
   byId('caption').textContent = active.name;
+  prepareDownload(byId('preview-download'),active);
 }
 function openPreview() {
   displayPreview();
@@ -117,6 +118,9 @@ function renderFolders() {
 }
 function render() {
   panel.replaceChildren();
+  byId('folder-zip').hidden = !inside;
+  byId('single-download').hidden = !inside || !active;
+  if (inside && active) prepareDownload(byId('single-download'),active);
   const clients = page === 'work';
   const items = clients ? (clientArtwork[selectedFolder] || []) : projects;
   const title = clients ? (inside ? selectedFolder : 'Selected Work') : 'Project Previews';
@@ -319,4 +323,71 @@ document.addEventListener('pointermove',event => {
   ghost.style.left = event.clientX+'px';
   ghost.style.top = (event.clientY-6)+'px';
   ghost.animate([{opacity:.36},{opacity:0}],{duration:90,easing:'ease-out'});
+});
+
+function downloadInfo(item) {
+  const name = item.name.replace(/[\\/:*?"<>|]/g,'-').trim();
+  return item.url
+    ? {path:'./assets/work/kyzatrex/Instagram.webloc',name:name+'.webloc'}
+    : {path:'./assets/'+item.file+'.webp',name:name+'.webp'};
+}
+function prepareDownload(link,item) {
+  const info = downloadInfo(item);
+  link.href = info.path;
+  link.download = info.name;
+}
+async function downloadFolders(groups,archiveName) {
+  const all = byId('all-zip');
+  const folder = byId('folder-zip');
+  if (all.disabled) return;
+  all.disabled = folder.disabled = true;
+  const status = byId('download-status');
+  try {
+    const zip = new JSZip();
+    const jobs = [];
+    for (const group of groups) {
+      const root = zip.folder(group);
+      for (const item of clientArtwork[group] || []) {
+        const target = item.folder && item.folder !== group ? root.folder(item.folder) : root;
+        jobs.push({target, info:downloadInfo(item)});
+      }
+    }
+    let cursor = 0, completed = 0;
+    status.textContent = 'Preparing download…';
+    async function collect() {
+      while (cursor < jobs.length) {
+        const {target,info} = jobs[cursor++];
+        const response = await fetch(info.path);
+        if (!response.ok) throw new Error('File unavailable');
+        target.file(info.name,await response.arrayBuffer());
+        status.textContent = 'Preparing '+(++completed)+' of '+jobs.length;
+      }
+    }
+    const results = await Promise.allSettled(Array.from({length:6},collect));
+    if (results.some(result=>result.status==='rejected')) throw new Error('Incomplete archive');
+    const url = URL.createObjectURL(await zip.generateAsync({type:'blob',compression:'STORE'}));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = archiveName+'.zip';
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    status.textContent = 'Download ready';
+  } catch {
+    status.textContent = 'Download failed. Please try again.';
+  } finally {
+    all.disabled = folder.disabled = false;
+  }
+}
+byId('all-zip').onclick = () => downloadFolders(clientFolders,'Selected Work');
+byId('folder-zip').onclick = () => downloadFolders([selectedFolder],selectedFolder);
+document.addEventListener('click',event => {
+  if (!byId('downloads').contains(event.target)) byId('downloads').open = false;
+});
+byId('downloads').addEventListener('keydown',event => {
+  if (event.key === 'Escape') {
+    byId('downloads').open = false;
+    byId('downloads').querySelector('summary').focus();
+  }
 });

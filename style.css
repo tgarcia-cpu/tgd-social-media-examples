@@ -78,3 +78,7 @@ footer{padding:0 6px;gap:4px}#path{overflow:hidden;text-overflow:ellipsis;white-
 #home:hover{background:var(--selection)}
 #title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:480px){header{gap:5px}#home{width:25px}}
+
+#downloads{position:relative}#downloads summary{display:grid;place-items:center;width:28px;height:28px;list-style:none;border-radius:5px;cursor:inherit}#downloads summary::-webkit-details-marker{display:none}#downloads[open] summary,#downloads summary:hover{background:var(--selection)}
+.download-menu{position:absolute;right:0;top:100%;z-index:8;width:max-content;max-width:80vw;padding:5px;background:white;border:1px solid var(--line);border-radius:7px;box-shadow:0 4px 18px #17263820}
+.download-menu button,.download-menu a{display:block;width:100%;text-align:left;padding:8px;font-size:.8rem;text-decoration:none;color:inherit;border-radius:4px}.download-menu button:hover,.download-menu a:hover{background:var(--selection)}#download-status:not(:empty){display:block;padding:5px 8px;font-size:.72rem}#preview-download{margin-left:auto;padding:5px;font-size:.75rem;color:inherit;text-decoration:none}#preview-download:hover{text-decoration:underline}
