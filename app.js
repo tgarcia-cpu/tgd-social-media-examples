@@ -28,10 +28,13 @@ function imageFor(project) {
   img.alt = project.alt;
   return img;
 }
-function openPreview() {
+function displayPreview() {
   byId('large').src = imageFor(active).src;
   byId('large').alt = active.alt;
   byId('caption').textContent = active.name;
+}
+function openPreview() {
+  displayPreview();
   byId('zoom').showModal();
 }
 function shortcut(project, className) {
@@ -263,8 +266,21 @@ byId('home').onclick = () => {
   panel.scrollTop = 0;
 };
 document.addEventListener('keydown',event => {
-  if (event.key !== ' ' || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const dialog = byId('zoom');
+  const steps = {ArrowLeft:-1, ArrowUp:-1, ArrowRight:1, ArrowDown:1};
+  if (dialog.open && Object.hasOwn(steps,event.key)) {
+    event.preventDefault();
+    const images = (clientArtwork[selectedFolder] || []).filter(item => item.file);
+    const next = images[images.indexOf(active) + steps[event.key]];
+    if (next) {
+      active = next;
+      displayPreview();
+      render();
+    }
+    return;
+  }
+  if (event.key !== ' ') return;
   if (dialog.open) {
     event.preventDefault();
     if (!event.repeat) dialog.close();
@@ -279,6 +295,9 @@ document.addEventListener('keydown',event => {
     fileButton.click();
   }
   if (!dialog.open) openPreview();
+});
+byId('zoom').addEventListener('close',() => {
+  panel.querySelector('.file[aria-pressed="true"]')?.focus();
 });
 byId('close').onclick = () => byId('zoom').close();
 render();
