@@ -25,7 +25,13 @@ nav [aria-current=page]{background:#dfe3e8}nav svg{color:#535f70}nav [aria-curre
 .gallery{height:100%;display:flex;flex-direction:column}.gallery .preview{flex:1;border:none}.strip{display:flex;justify-content:center;gap:6px;padding:10px;border-top:1px solid var(--line);overflow:auto}.strip .file{width:auto;padding:4px}.strip img{width:52px;height:40px}
 footer{gap:8px;padding:0 14px;border-top:1px solid var(--line);font-size:.7rem;color:#536071}#count{margin-left:auto}.pixel{width:12px;height:9px;background:#0e223e;clip-path:polygon(0 0,40% 0,40% 22%,100% 22%,100% 100%,0 100%)}
 .about{padding:30px;max-width:470px;font-size:.875rem;line-height:1.6}
-dialog{border:1px solid var(--line);border-radius:10px;padding:26px;text-align:center;color:inherit}dialog::backdrop{background:#18233185}dialog img{display:block;max-width:78vw;max-height:72svh;margin:8px auto}dialog p{font-size:.85rem;margin-bottom:0}#close{position:absolute;right:4px;top:1px;font-size:1.3rem}
+dialog{border:1px solid var(--line);border-radius:10px;padding:0;overflow:hidden;color:inherit}
+dialog::backdrop{background:#18233185}
+#large{display:block;max-width:calc(100vw - 24px);max-height:calc(100dvh - 64px);margin:0}
+.preview-titlebar{display:flex;align-items:center;gap:5px;height:32px;padding:0 6px;background:#f7f8f9;contain:inline-size}
+#caption{margin:0;font-size:.8rem;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#close{flex:none;display:grid;place-items:center;width:24px;height:24px;padding:0;font-size:1.15rem;border-radius:4px}
+#close:hover{background:var(--selection)}
 [hidden]{display:none!important}
 @media(max-width:750px){body{padding:10px}.window{grid-template:48px 40px minmax(0,1fr) 28px / minmax(0,1fr);height:calc(100svh - 20px);min-height:420px}.lights{width:auto;padding-left:12px;gap:4px}.lights i{width:7px;height:7px}header{padding-right:8px;gap:9px}nav{flex-direction:row;border:0;border-bottom:1px solid var(--line);padding:4px 8px}nav small{display:none}.split{grid-template-columns:1fr;grid-template-rows:minmax(150px,40%) 1fr}.preview{padding:12px;border-left:0;border-top:1px solid var(--line)}.art{height:calc(100% - 32px)}.art img{height:100%;object-fit:contain;margin:auto}.columns{grid-template: minmax(150px,40%) 1fr / 36% 64%}.columns .preview{grid-column:1/-1}.icons{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery .preview{min-height:0}.gallery .art{height:auto;max-height:80%}.gallery .art img{max-height:42svh}}
 body{place-items:start;padding:clamp(10px,4vw,54px)}
